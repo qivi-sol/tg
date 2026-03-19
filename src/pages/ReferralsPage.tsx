@@ -18,8 +18,8 @@ export const ReferralsPage = () => {
 
   const referralLink = dashboard.referrals.referralLink;
   const deepLinkPreview = botUsernameConfigured
-    ? `https://t.me/${appConfig.telegramBotUsername}/app?startapp=ref_${dashboard.profile.referralCode}`
-    : `https://t.me/YOUR_BOT_USERNAME/app?startapp=ref_${dashboard.profile.referralCode}`;
+    ? `https://t.me/${appConfig.telegramBotUsername}?startapp=ref_${dashboard.profile.referralCode}`
+    : `https://t.me/YOUR_BOT_USERNAME?startapp=ref_${dashboard.profile.referralCode}`;
 
   const handleCopy = async () => {
     if (!referralLink) {

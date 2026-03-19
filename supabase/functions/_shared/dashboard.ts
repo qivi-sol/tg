@@ -32,7 +32,7 @@ export const buildReferralLink = (referralCode: string) => {
   const botUsername = getBotUsername();
 
   return botUsername
-    ? `https://t.me/${botUsername}/app?startapp=ref_${referralCode}`
+    ? `https://t.me/${botUsername}?startapp=ref_${referralCode}`
     : null;
 };
 

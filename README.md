@@ -204,7 +204,7 @@ This keeps the client as a renderer, not the source of truth.
 Referral deep links follow this format:
 
 ```text
-https://t.me/YOUR_BOT_USERNAME/app?startapp=ref_CODE
+https://t.me/YOUR_BOT_USERNAME?startapp=ref_CODE
 ```
 
 Rules in the MVP:
