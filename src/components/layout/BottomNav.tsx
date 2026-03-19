@@ -1,15 +1,17 @@
 import { NavLink } from "react-router-dom";
+import { useI18n } from "../../hooks/useI18n";
 import { cn } from "../../lib/cn";
 
-const navItems = [
-  { to: "/", label: "Home", short: "HM" },
-  { to: "/raid", label: "Raid", short: "RD" },
-  { to: "/referrals", label: "Refs", short: "RF" },
-  { to: "/leaderboard", label: "Ranks", short: "LB" },
-  { to: "/shop", label: "Shop", short: "SP" }
-];
-
 export const BottomNav = () => {
+  const { copy } = useI18n();
+  const navItems = [
+    { to: "/", ...copy.nav.home },
+    { to: "/raid", ...copy.nav.raid },
+    { to: "/referrals", ...copy.nav.referrals },
+    { to: "/leaderboard", ...copy.nav.leaderboard },
+    { to: "/shop", ...copy.nav.shop }
+  ];
+
   return (
     <nav className="glass-card fixed bottom-4 left-1/2 z-40 flex w-[calc(100%-24px)] max-w-[460px] -translate-x-1/2 items-center justify-between rounded-[24px] px-2 py-2">
       {navItems.map((item) => (

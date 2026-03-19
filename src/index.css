@@ -87,3 +87,96 @@ a {
   width: 100%;
   background: linear-gradient(90deg, transparent, rgba(77, 230, 255, 0.24), transparent);
 }
+
+@keyframes bombFlash {
+  0% {
+    opacity: 0;
+  }
+
+  18% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes bombShockwave {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.18);
+  }
+
+  18% {
+    opacity: 0.95;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.18);
+  }
+}
+
+@keyframes bombCore {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.45);
+  }
+
+  12% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(2.2);
+  }
+}
+
+@keyframes vaultShake {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  18% {
+    transform: translate3d(-5px, 2px, 0);
+  }
+
+  36% {
+    transform: translate3d(6px, -3px, 0);
+  }
+
+  54% {
+    transform: translate3d(-4px, 2px, 0);
+  }
+
+  72% {
+    transform: translate3d(3px, -1px, 0);
+  }
+}
+
+.bomb-blast-backdrop {
+  animation: bombFlash 640ms ease-out both;
+  background:
+    radial-gradient(circle at center, rgba(255, 107, 138, 0.45), transparent 34%),
+    radial-gradient(circle at center, rgba(247, 201, 107, 0.24), transparent 52%),
+    rgba(4, 7, 13, 0.74);
+}
+
+.bomb-shockwave {
+  animation: bombShockwave 760ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.bomb-core {
+  animation: bombCore 620ms ease-out both;
+  background: radial-gradient(circle, rgba(255, 170, 186, 0.92), rgba(255, 107, 138, 0.16) 68%, transparent 78%);
+  box-shadow:
+    0 0 30px rgba(255, 107, 138, 0.38),
+    0 0 90px rgba(255, 107, 138, 0.22);
+}
+
+.vault-shake {
+  animation: vaultShake 520ms ease-in-out;
+}

@@ -41,6 +41,10 @@ serve(async (request) => {
 
     return json({
       dashboard,
+      creditedCoins: Number(action.credited_coins ?? 0),
+      creditedShards: Number(action.credited_shards ?? 0),
+      temporaryCoins: Number(action.temporary_coins ?? 0),
+      temporaryShards: Number(action.temporary_shards ?? 0),
       raid: action.raid_status === "active" ? dashboard.activeRaid : null,
       rewardDelta: {
         label: action.reward_label,

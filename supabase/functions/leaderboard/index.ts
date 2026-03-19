@@ -3,6 +3,7 @@ import { requireAppUser } from "../_shared/auth.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import { createServiceClient } from "../_shared/env.ts";
 import { errorResponse, json } from "../_shared/http.ts";
+import { getVaultProgression } from "../_shared/progression.ts";
 
 serve(async (request) => {
   if (request.method === "OPTIONS") {
@@ -16,7 +17,9 @@ serve(async (request) => {
     const [topUsersResult, currentUserResult] = await Promise.all([
       client
         .from("users")
-        .select("id, first_name, username, avatar_url, total_coins_earned, vault_level")
+        .select(
+          "id, first_name, username, avatar_url, active_days, total_raids, total_coins_earned, total_shards_earned"
+        )
         .order("total_coins_earned", { ascending: false })
         .order("created_at", { ascending: true })
         .limit(50),
@@ -38,7 +41,7 @@ serve(async (request) => {
       username: user.username,
       avatarUrl: user.avatar_url,
       totalCoinsEarned: user.total_coins_earned,
-      vaultLevel: user.vault_level
+      vaultLevel: getVaultProgression(user).level
     }));
 
     const higherEarners = await client

@@ -127,11 +127,15 @@ export interface RewardedAdClaimResponse {
 }
 
 export interface RaidActionResponse {
+  creditedCoins?: number;
+  creditedShards?: number;
   dashboard: DashboardData;
   raid: ActiveRaid | null;
   rewardDelta?: RewardPayload;
   status: RaidStatus;
   message?: string;
+  temporaryCoins?: number;
+  temporaryShards?: number;
 }
 
 export interface LeaderboardEntry {

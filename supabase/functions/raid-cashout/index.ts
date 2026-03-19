@@ -39,6 +39,8 @@ serve(async (request) => {
 
     return json({
       dashboard,
+      creditedCoins: Number(action.credited_coins ?? 0),
+      creditedShards: Number(action.credited_shards ?? 0),
       raid: null,
       status: "cashed_out",
       message: "Raid reward banked."

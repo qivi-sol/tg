@@ -1,32 +1,37 @@
 import type { SupabaseClient } from "npm:@supabase/supabase-js@2";
 import { getBotUsername, serverConfig } from "./env.ts";
+import { getVaultProgression } from "./progression.ts";
 import { getNextDailyReward, serializeRaid } from "./raid.ts";
 import type { Database } from "./database.types.ts";
 
 type ServiceClient = SupabaseClient<Database>;
 type UserRow = Database["public"]["Tables"]["users"]["Row"];
 
-const mapUser = (user: UserRow) => ({
-  id: user.id,
-  telegramId: user.telegram_id,
-  username: user.username,
-  firstName: user.first_name,
-  avatarUrl: user.avatar_url,
-  coins: user.coins,
-  keys: user.keys,
-  lastAdRewardAt: user.last_ad_reward_at,
-  shards: user.shards,
-  vaultLevel: user.vault_level,
-  activeDays: user.active_days,
-  totalRaids: user.total_raids,
-  totalCoinsEarned: user.total_coins_earned,
-  totalShardsEarned: user.total_shards_earned,
-  referralCode: user.referral_code,
-  referredBy: user.referred_by,
-  lastDailyClaimAt: user.last_daily_claim_at,
-  createdAt: user.created_at,
-  updatedAt: user.updated_at
-});
+const mapUser = (user: UserRow) => {
+  const progression = getVaultProgression(user);
+
+  return {
+    id: user.id,
+    telegramId: user.telegram_id,
+    username: user.username,
+    firstName: user.first_name,
+    avatarUrl: user.avatar_url,
+    coins: user.coins,
+    keys: user.keys,
+    lastAdRewardAt: user.last_ad_reward_at,
+    shards: user.shards,
+    vaultLevel: progression.level,
+    activeDays: user.active_days,
+    totalRaids: user.total_raids,
+    totalCoinsEarned: user.total_coins_earned,
+    totalShardsEarned: user.total_shards_earned,
+    referralCode: user.referral_code,
+    referredBy: user.referred_by,
+    lastDailyClaimAt: user.last_daily_claim_at,
+    createdAt: user.created_at,
+    updatedAt: user.updated_at
+  };
+};
 
 export const buildReferralLink = (referralCode: string) => {
   const botUsername = getBotUsername();

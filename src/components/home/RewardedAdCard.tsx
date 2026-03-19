@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useI18n } from "../../hooks/useI18n";
 import { Card } from "../common/Card";
 import { PrimaryButton } from "../common/PrimaryButton";
 import type { RewardedAdStatus } from "../../types/game";
@@ -18,6 +19,7 @@ export const RewardedAdCard = ({
   status
 }: RewardedAdCardProps) => {
   const [now, setNow] = useState(Date.now());
+  const { copy } = useI18n();
 
   useEffect(() => {
     if (status.canClaim && adsEnabled) {
@@ -33,25 +35,25 @@ export const RewardedAdCard = ({
 
   const isActionDisabled = loading || !status.canClaim || !adsEnabled;
   const statusLabel = !adsEnabled
-    ? "Setup needed"
+    ? copy.rewards.setupNeeded
     : status.canClaim
-      ? "Ready"
-      : formatTimer(status.nextClaimAt, now);
+      ? copy.rewards.ready
+      : formatTimer(status.nextClaimAt, now, copy.rewards.ready);
 
   return (
     <Card className="bg-vault-grid">
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="text-sm font-medium uppercase tracking-[0.24em] text-white/[0.45]">
-            Rewarded Boost
+            {copy.rewards.rewardedBoost}
           </div>
           <div className="mt-2 text-lg font-semibold text-white">
             {status.rewardPreview.label}
           </div>
           <div className="mt-1 text-sm text-soft">
             {adsEnabled
-              ? `One rewarded claim every ${status.cooldownMinutes} minutes in MVP mode.`
-              : "Rewarded ad claims are scaffolded, but the live ad provider is not connected in this build."}
+              ? copy.rewards.rewardedBoostBody(status.cooldownMinutes)
+              : copy.rewards.rewardedBoostDisabled}
           </div>
         </div>
         <div className="rounded-full border border-accent-green/20 bg-accent-green/10 px-3 py-1 text-xs font-semibold text-accent-green">
@@ -65,12 +67,12 @@ export const RewardedAdCard = ({
         variant="secondary"
       >
         {loading
-          ? "Verifying Boost..."
+          ? copy.rewards.verifyingBoost
           : !adsEnabled
-            ? "Ads Coming Soon"
+            ? copy.rewards.adsComingSoon
             : status.canClaim
-              ? `Watch Ad for ${status.rewardPreview.label}`
-              : "Ad Cooldown"}
+              ? copy.rewards.watchAdFor(status.rewardPreview.label)
+              : copy.rewards.adCooldown}
       </PrimaryButton>
     </Card>
   );

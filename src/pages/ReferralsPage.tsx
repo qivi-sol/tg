@@ -4,11 +4,13 @@ import { Modal } from "../components/common/Modal";
 import { PrimaryButton } from "../components/common/PrimaryButton";
 import { StatusBanner } from "../components/common/StatusBanner";
 import { useAuth } from "../hooks/useAuth";
+import { useI18n } from "../hooks/useI18n";
 import { appConfig, botUsernameConfigured } from "../lib/config";
 import { copyText, openTelegramShare } from "../lib/telegram";
 
 export const ReferralsPage = () => {
   const { dashboard } = useAuth();
+  const { copy, language } = useI18n();
   const [copied, setCopied] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -23,9 +25,7 @@ export const ReferralsPage = () => {
 
   const handleCopy = async () => {
     if (!referralLink) {
-      setErrorMessage(
-        "Referral link is not available until VITE_TELEGRAM_BOT_USERNAME and TELEGRAM_BOT_USERNAME are configured."
-      );
+      setErrorMessage(copy.referrals.linkUnavailable);
       return;
     }
 
@@ -35,16 +35,18 @@ export const ReferralsPage = () => {
       setErrorMessage(null);
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Could not copy referral link."
+        error instanceof Error
+          ? error.message
+          : language === "ru"
+            ? "Не удалось скопировать ссылку."
+            : "Could not copy referral link."
       );
     }
   };
 
   const handleShare = () => {
     if (!referralLink) {
-      setErrorMessage(
-        "Telegram sharing stays disabled until the bot username is configured."
-      );
+      setErrorMessage(copy.referrals.shareUnavailable);
       return;
     }
 
@@ -53,7 +55,11 @@ export const ReferralsPage = () => {
       setErrorMessage(null);
     } catch (error) {
       setErrorMessage(
-        error instanceof Error ? error.message : "Could not open Telegram sharing."
+        error instanceof Error
+          ? error.message
+          : language === "ru"
+            ? "Не удалось открыть шаринг Telegram."
+            : "Could not open Telegram sharing."
       );
     }
   };
@@ -63,48 +69,43 @@ export const ReferralsPage = () => {
       <section className="panel-grid">
         <Card className="bg-vault-grid p-5">
           <div className="text-[11px] uppercase tracking-[0.28em] text-white/[0.45]">
-            Invite Raiders
+            {copy.referrals.title}
           </div>
           <div className="mt-2 text-2xl font-semibold text-white">
-            Grow your vault network
+            {copy.referrals.heroTitle}
           </div>
-          <p className="mt-3 text-sm leading-6 text-soft">
-            Invite a new player and earn 2 Keys. They start with +1 Key too.
-          </p>
+          <p className="mt-3 text-sm leading-6 text-soft">{copy.referrals.heroBody}</p>
           <div className="mt-4 rounded-[20px] border border-white/10 bg-black/20 p-4">
             <div className="text-xs uppercase tracking-[0.24em] text-white/[0.45]">
-              Your referral code
+              {copy.referrals.code}
             </div>
             <div className="mt-3 text-2xl font-semibold text-white">
               {dashboard.profile.referralCode}
             </div>
             <div className="mt-3 break-all text-sm text-soft">
-              {referralLink ??
-                "Configure your Telegram bot username to unlock the real referral link."}
+              {referralLink ?? copy.referrals.configureBot}
             </div>
           </div>
           <div className="mt-4 grid grid-cols-2 gap-3">
             <PrimaryButton disabled={!referralLink} onClick={handleCopy}>
-              Copy Link
+              {copy.referrals.copyLink}
             </PrimaryButton>
             <PrimaryButton
               disabled={!referralLink}
               onClick={handleShare}
               variant="secondary"
             >
-              Share in Telegram
+              {copy.referrals.shareTelegram}
             </PrimaryButton>
           </div>
         </Card>
 
-        <StatusBanner title="Referral Loop" tone={referralLink ? "success" : "info"}>
-          Every qualified join credits the inviter with 2 Keys and the invitee with 1
-          Key. Only the first valid referral counts, self-referrals are blocked, and
-          the bonus is granted once server-side.
+        <StatusBanner title={copy.referrals.loopTitle} tone={referralLink ? "success" : "info"}>
+          {copy.referrals.loopBody}
         </StatusBanner>
 
         {errorMessage ? (
-          <StatusBanner title="Share Error" tone="danger">
+          <StatusBanner title={copy.referrals.shareError} tone="danger">
             {errorMessage}
           </StatusBanner>
         ) : null}
@@ -112,7 +113,7 @@ export const ReferralsPage = () => {
         <div className="grid grid-cols-2 gap-3">
           <Card className="rounded-[20px] p-4">
             <div className="text-xs uppercase tracking-[0.24em] text-white/[0.45]">
-              Total referrals
+              {copy.referrals.totalReferrals}
             </div>
             <div className="mt-3 text-xl font-semibold text-white">
               {dashboard.referrals.totalReferrals}
@@ -120,7 +121,7 @@ export const ReferralsPage = () => {
           </Card>
           <Card className="rounded-[20px] p-4">
             <div className="text-xs uppercase tracking-[0.24em] text-white/[0.45]">
-              Active referrals
+              {copy.referrals.activeReferrals}
             </div>
             <div className="mt-3 text-xl font-semibold text-white">
               {dashboard.referrals.activeReferrals}
@@ -128,30 +129,30 @@ export const ReferralsPage = () => {
           </Card>
           <Card className="rounded-[20px] p-4">
             <div className="text-xs uppercase tracking-[0.24em] text-white/[0.45]">
-              Bonus earned
+              {copy.referrals.bonusEarned}
             </div>
             <div className="mt-3 text-xl font-semibold text-white">
-              +{dashboard.referrals.referralBonusEarned} Keys
+              +{dashboard.referrals.referralBonusEarned} {copy.common.keys}
             </div>
           </Card>
           <Card className="rounded-[20px] p-4">
             <div className="text-xs uppercase tracking-[0.24em] text-white/[0.45]">
-              Reward rule
+              {copy.referrals.rewardRule}
             </div>
             <div className="mt-3 text-sm leading-6 text-soft">
-              Inviter +2 Keys, invitee +1 Key on first valid join.
+              {copy.referrals.rewardRuleBody}
             </div>
           </Card>
         </div>
 
         <Card className="rounded-[24px] p-4">
           <div className="text-xs uppercase tracking-[0.24em] text-white/[0.45]">
-            Deep link format
+            {copy.referrals.deepLinkFormat}
           </div>
           <p className="mt-3 text-sm leading-6 text-soft">
             {botUsernameConfigured
-              ? "Your bot username is configured. Keep the ref_CODE pattern intact when wiring bot deep links."
-              : "Set your live bot username in both frontend and Edge Function env vars, then keep the ref_CODE pattern intact."}
+              ? copy.referrals.deepLinkConfigured
+              : copy.referrals.deepLinkMissing}
           </p>
           <div className="mt-3 break-all rounded-[18px] border border-white/10 bg-black/20 p-3 text-sm text-white/[0.85]">
             {deepLinkPreview}
@@ -160,10 +161,10 @@ export const ReferralsPage = () => {
       </section>
 
       <Modal
-        description="Your referral link is copied and ready to drop into chats."
+        description={copy.referrals.copiedBody}
         onClose={() => setCopied(false)}
         open={copied}
-        title="Referral link copied"
+        title={copy.referrals.copiedTitle}
       />
     </>
   );

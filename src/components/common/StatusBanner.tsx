@@ -26,7 +26,7 @@ export const StatusBanner = ({
           {title}
         </div>
       ) : null}
-      <div className="text-sm leading-6 text-white">{children}</div>
+      <div className="whitespace-pre-line text-sm leading-6 text-white">{children}</div>
     </div>
   );
 };

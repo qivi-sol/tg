@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Card } from "../common/Card";
 import { PrimaryButton } from "../common/PrimaryButton";
+import { useI18n } from "../../hooks/useI18n";
 import type { DailyRewardStatus } from "../../types/game";
 import { formatTimer } from "../../lib/format";
 
@@ -16,6 +17,7 @@ export const DailyRewardCard = ({
   status
 }: DailyRewardCardProps) => {
   const [now, setNow] = useState(Date.now());
+  const { copy } = useI18n();
 
   useEffect(() => {
     if (status.canClaim) {
@@ -34,15 +36,17 @@ export const DailyRewardCard = ({
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="text-sm font-medium uppercase tracking-[0.24em] text-white/[0.45]">
-            Daily Reward
+            {copy.rewards.dailyTitle}
           </div>
           <div className="mt-2 text-lg font-semibold text-white">
-            Day {status.rewardPreview.dayIndex}
+            {copy.rewards.dayLabel(status.rewardPreview.dayIndex)}
           </div>
           <div className="mt-1 text-sm text-soft">{status.rewardPreview.label}</div>
         </div>
         <div className="rounded-full border border-accent-cyan/20 bg-accent-cyan/10 px-3 py-1 text-xs font-semibold text-accent-cyan">
-          {status.canClaim ? "Ready" : formatTimer(status.nextClaimAt, now)}
+          {status.canClaim
+            ? copy.rewards.ready
+            : formatTimer(status.nextClaimAt, now, copy.rewards.ready)}
         </div>
       </div>
       <PrimaryButton
@@ -50,7 +54,7 @@ export const DailyRewardCard = ({
         disabled={!status.canClaim || loading}
         onClick={onClaim}
       >
-        {status.canClaim ? "Claim Daily Reward" : "On Cooldown"}
+        {status.canClaim ? copy.rewards.claimDaily : copy.rewards.onCooldown}
       </PrimaryButton>
     </Card>
   );

@@ -1,3 +1,4 @@
+import { useI18n } from "../../hooks/useI18n";
 import { cn } from "../../lib/cn";
 import type { ActiveRaid } from "../../types/game";
 
@@ -21,6 +22,26 @@ export const RaidGrid = ({
   pendingCellIndex = null,
   raid
 }: RaidGridProps) => {
+  const { language } = useI18n();
+  const cellLabels =
+    language === "ru"
+      ? {
+          bomb: "бомба",
+          coin: "монеты",
+          multiplier: "множитель",
+          shard: "шард",
+          scanning: "Сканируем",
+          tap: "Тап"
+        }
+      : {
+          bomb: "bomb",
+          coin: "coin",
+          multiplier: "multiplier",
+          shard: "shard",
+          scanning: "Scanning",
+          tap: "Tap"
+        };
+
   return (
     <div className="grid grid-cols-3 gap-3">
       {raid.cells.map((cell) => {
@@ -44,7 +65,7 @@ export const RaidGrid = ({
             {cell.revealed ? (
               <div className="space-y-1">
                 <div className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/[0.45]">
-                  {cell.cellType}
+                  {cell.cellType ? cellLabels[cell.cellType] : null}
                 </div>
                 <div className="text-sm font-semibold text-white">{cell.label}</div>
               </div>
@@ -52,14 +73,14 @@ export const RaidGrid = ({
               <div className="space-y-2">
                 <div className="mx-auto h-10 w-10 rounded-full border border-accent-cyan/30 bg-accent-cyan/10" />
                 <div className="text-[10px] uppercase tracking-[0.26em] text-accent-cyan">
-                  Scanning
+                  {cellLabels.scanning}
                 </div>
               </div>
             ) : (
               <div className="space-y-2">
                 <div className="mx-auto h-10 w-10 rounded-full border border-white/10 bg-white/5" />
                 <div className="text-[10px] uppercase tracking-[0.26em] text-white/[0.35]">
-                  Tap
+                  {cellLabels.tap}
                 </div>
               </div>
             )}
