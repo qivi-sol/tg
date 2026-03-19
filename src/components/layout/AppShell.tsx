@@ -15,7 +15,7 @@ export const AppShell = () => {
     return <LoadingScreen />;
   }
 
-  if (error || !dashboard) {
+  if (!dashboard) {
     return (
       <div className="app-shell mx-auto max-w-[460px]">
         <Card className="mt-10 p-6">
@@ -72,6 +72,11 @@ export const AppShell = () => {
         <StatusBanner className="mb-4" title="Dev Auth" tone="info">
           Browser dev auth is enabled. This mode is for local testing only and should
           be disabled before production launch.
+        </StatusBanner>
+      ) : null}
+      {error ? (
+        <StatusBanner className="mb-4" title="Sync Notice" tone="info">
+          {error}
         </StatusBanner>
       ) : null}
       {runtimeWarnings.botUsername ? (

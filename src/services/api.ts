@@ -1,6 +1,8 @@
 import { configErrorMessage } from "../lib/config";
 import { getSupabaseClient } from "./supabase";
 
+const EDGE_FUNCTION_TIMEOUT_MS = 12_000;
+
 export class ApiError extends Error {
   status: number;
 
@@ -35,11 +37,35 @@ const extractFunctionError = async (error: unknown) => {
   return new ApiError("Request failed");
 };
 
+const withTimeout = async <T>(promise: Promise<T>, timeoutMs = EDGE_FUNCTION_TIMEOUT_MS) =>
+  new Promise<T>((resolve, reject) => {
+    const timeoutId = globalThis.setTimeout(() => {
+      reject(
+        new ApiError(
+          "TON Vault backend is taking too long to respond. Check your connection and try again.",
+          504
+        )
+      );
+    }, timeoutMs);
+
+    promise.then(
+      (value) => {
+        globalThis.clearTimeout(timeoutId);
+        resolve(value);
+      },
+      (error) => {
+        globalThis.clearTimeout(timeoutId);
+        reject(error);
+      }
+    );
+  });
+
 export const invokeEdge = async <TResponse>(
   name: string,
   options?: {
     body?: Record<string, unknown>;
     token?: string | null;
+    timeoutMs?: number;
   }
 ): Promise<TResponse> => {
   if (configErrorMessage) {
@@ -47,14 +73,17 @@ export const invokeEdge = async <TResponse>(
   }
 
   const supabase = getSupabaseClient();
-  const { data, error } = await supabase.functions.invoke(name, {
-    body: options?.body ?? {},
-    headers: options?.token
-      ? {
-          Authorization: `Bearer ${options.token}`
-        }
-      : undefined
-  });
+  const { data, error } = await withTimeout(
+    supabase.functions.invoke(name, {
+      body: options?.body ?? {},
+      headers: options?.token
+        ? {
+            Authorization: `Bearer ${options.token}`
+          }
+        : undefined
+    }),
+    options?.timeoutMs
+  );
 
   if (error) {
     throw await extractFunctionError(error);

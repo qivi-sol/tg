@@ -15,41 +15,29 @@ serve(async (request) => {
     const { userId } = await requireAppUser(request);
     const client = createServiceClient();
 
-    const [userResult, existingRaidResult] = await Promise.all([
-      client.from("users").select("*").eq("id", userId).single(),
-      client
-        .from("raids")
-        .select("*")
-        .eq("user_id", userId)
-        .eq("status", "active")
-        .maybeSingle()
-    ]);
-
-    if (userResult.error || !userResult.data) {
-      throw new Error(userResult.error?.message ?? "User not found.");
-    }
-
-    if (existingRaidResult.data) {
-      const dashboard = await buildDashboard(client, userId);
-      return json({
-        dashboard,
-        raid: dashboard.activeRaid,
-        status: "active",
-        message: "Active raid resumed."
-      });
-    }
-
-    if (userResult.data.keys < 1) {
-      return errorResponse("You need at least 1 Key to start a raid.", 400);
-    }
-
     const startResult = await client.rpc("start_raid_session", {
       p_cells: createRaidLayout(),
       p_user_id: userId
     });
 
-    if (startResult.error || !unwrapRpcRow(startResult.data)) {
-      throw new Error(startResult.error?.message ?? "Failed to create raid.");
+    if (startResult.error) {
+      const formatted = formatActionError(startResult.error);
+
+      if (formatted.status === 409) {
+        const dashboard = await buildDashboard(client, userId);
+        return json({
+          dashboard,
+          raid: dashboard.activeRaid,
+          status: "active",
+          message: "Active raid resumed."
+        });
+      }
+
+      return errorResponse(formatted.message, formatted.status);
+    }
+
+    if (!unwrapRpcRow(startResult.data)) {
+      throw new Error("Failed to create raid.");
     }
 
     const dashboard = await buildDashboard(client, userId);
