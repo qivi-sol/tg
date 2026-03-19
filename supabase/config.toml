@@ -1,0 +1,31 @@
+project_id = "ton-vault"
+
+[functions.telegram-auth]
+verify_jwt = false
+
+[functions.app-bootstrap]
+verify_jwt = false
+
+[functions.raid-start]
+verify_jwt = false
+
+[functions.raid-reveal]
+verify_jwt = false
+
+[functions.raid-cashout]
+verify_jwt = false
+
+[functions.daily-claim]
+verify_jwt = false
+
+[functions.leaderboard]
+verify_jwt = false
+
+[functions.rewarded-ad-claim]
+verify_jwt = false
+
+[functions.payment-create-invoice]
+verify_jwt = false
+
+[functions.payment-verify]
+verify_jwt = false
