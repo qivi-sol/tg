@@ -63,7 +63,7 @@ npm run supabase:functions:serve
 npm run dev
 ```
 
-The app uses `HashRouter`, so static hosting and Telegram Mini App shells stay simple.
+The app now uses `BrowserRouter` so Telegram Mini App launches work cleanly. Static hosts such as Netlify need an SPA redirect to `index.html`, which is already included in `public/_redirects`.
 
 ## Environment Variables
 
@@ -183,6 +183,7 @@ supabase secrets set \
 - This repo already keeps that verification boundary in the Edge Function layer.
 - Before launch, confirm `TELEGRAM_BOT_TOKEN` is correct and `VITE_ENABLE_DEV_AUTH` is disabled.
 - Do not allow arbitrary client-supplied `telegram_id` values outside the verified Telegram payload.
+- `index.html` includes Telegram's official `telegram-web-app.js` bridge, which is required for `window.Telegram.WebApp.initData` to be available inside the Mini App.
 
 ## Raid Security Model
 
@@ -290,6 +291,14 @@ npm run build
 ```
 
 Deploy `dist/` to a static host such as Vercel, Netlify, or Cloudflare Pages.
+
+For Netlify:
+
+- Build command: `npm run build`
+- Publish directory: `dist`
+- SPA fallback: already handled by `public/_redirects`
+- BotFather Mini App URL: use the root site URL only, for example `https://your-site.netlify.app`
+- Do not append `#`, `#/home`, or other hash routes to the BotFather URL
 
 ### Supabase
 
